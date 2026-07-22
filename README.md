@@ -50,6 +50,10 @@ These were excluded to keep the project aligned with the 3-4 hour assessment win
 - Main UI: `frontend/src/App.jsx`.
 - App entry: `frontend/src/main.jsx`.
 - Vite config: `frontend/vite.config.js`.
+- Reusable components live in `frontend/src/components`.
+- API access is isolated in `frontend/src/api`.
+- Formatting helpers live in `frontend/src/lib`.
+- Product constants live in `frontend/src/data`.
 
 The frontend keeps state local because this is a single-page assessment slice. The selected size triggers the confidence check directly, as requested, and size buttons remain clickable even when the backend knows a size is out of stock.
 
@@ -233,6 +237,20 @@ frontend/
   vite.config.js
   src/
     App.jsx
+    api/
+      confidence.js
+    components/
+      AlternativeCard.jsx
+      ConfidenceChecker.jsx
+      ConfidenceResult.jsx
+      PriceLine.jsx
+      ProductOverview.jsx
+      SegmentedToggle.jsx
+      SizeSelector.jsx
+    data/
+      product.js
+    lib/
+      format.js
     main.jsx
     index.css
 AI_AUDIT_TRAIL.md
