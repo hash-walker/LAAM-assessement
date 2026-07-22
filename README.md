@@ -171,16 +171,27 @@ cd backend && pytest test_confidence_api.py
 
 ## 9. AI Usage
 
-**Tools:** Gemini Pro 3.1 (brainstorming, research), Claude Sonnet (for coding)
+**Tools:** Gemini Pro 3.1 (brainstorming/scoping), Claude Sonnet 4.6 (code refactoring/architecture), Gemini Flash (execution)
 
-**What AI helped with:**
-- Generated initial code, then split into layers on request
-- Given problem understanding and approach upfront — used for execution, not decision-making
-- Helped write the 4 backend test cases
+**Workflow — reasoning first, code second:**
+
+Before writing a single line of code, I used AI as a thinking partner to stress-test my own problem framing. I explicitly told it *not to give me a solution* — I walked through what I understood, where I was uncertain, and let AI validate or push back. All core decisions were locked before any code prompt was issued:
+- Decision-confidence framing (not a search/discovery problem)
+- Clickable OOS sizes to capture intent rather than silent drop-off
+- Delivery SLA as the primary trust gap, not price
+- Alternatives ranked by speed, not price, for time-sensitive fashion
+
+**What AI did:**
+- Validated the intent-capture UX pattern against industry examples
+- Generated the initial scaffolding (backend + frontend), then split into layers on request
+- Helped write the 4 integration test cases
+- Generated the 4 editorial South Asian bridal photography assets
 
 **What I did:**
-- All core decisions (delivery-trust focus, clickable sizes, speed-ranked alternatives) made before involving AI
-- Reviewed/restructured generated code into the 3-layer backend
+- Defined the entire problem scope and product decisions before AI wrote any code
+- Reviewed and restructured all generated code into the 3-layer backend
+- Rejected AI's suggestion of a Go backend with goroutines and vector search as out-of-scope
+- Explicitly scoped out parallel search mocking — chose a real sequential algorithm instead, documented async execution as a genuine future improvement
+- Approved all git commits after manual review
 
-**Correction example:** 
-Initially AI suggested to make it like parallel search and async execution, it will be good for performance but it was out of scope of this assessment and not something to do in 3 hours, it is an optimization problem and we are not currently dealing with it. I redirected AI to implement it in a simple and understandable way, focusing on business logic rather than performance optimizations.
+**Full prompt log and human override decisions:** see [`AI_AUDIT_TRAIL.md`](./AI_AUDIT_TRAIL.md)
