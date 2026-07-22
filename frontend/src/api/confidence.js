@@ -1,15 +1,15 @@
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
 export async function checkConfidence({ productId, size, city, isStitched }) {
-  const response = await fetch(`${API_URL}/api/check-confidence`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      product_id: productId,
-      size,
-      city,
-      is_stitched: isStitched,
-    }),
+  const params = new URLSearchParams({
+    product_id: String(productId),
+    size: String(size),
+    city: String(city),
+    is_stitched: String(isStitched),
+  });
+
+  const response = await fetch(`${API_URL}/api/check-confidence?${params}`, {
+    method: "GET",
   });
 
   if (!response.ok) {
