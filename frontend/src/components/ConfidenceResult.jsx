@@ -17,7 +17,7 @@ export function ConfidenceResult({ error, loading, result, selectedSize, onProdu
       )}
 
       {!loading && result?.status === "available" && (
-        <AvailableResult result={result} />
+        <AvailableResult result={result} onProductSelect={onProductSelect} />
       )}
 
       {!loading && result?.status === "out_of_stock" && (
@@ -58,7 +58,7 @@ function SkeletonLoader() {
 }
 
 /* ── Available state ──────────────────────────────────────────── */
-function AvailableResult({ result }) {
+function AvailableResult({ result, onProductSelect }) {
   const [isAdded, setIsAdded] = useState(false);
 
   function handleAddToBag() {
@@ -163,6 +163,31 @@ function AvailableResult({ result }) {
       >
         {isAdded ? "Added to Bag ✓" : "Add to Bag"}
       </button>
+
+      {/* Supplementary shelf — faster or cheaper alternatives, shown BELOW the CTA.
+           Placement is deliberate: primary path closes first, options follow. */}
+      {result.alternatives && result.alternatives.length > 0 && (
+        <div className="mt-5 pt-5" style={{ borderTop: "1px solid var(--border)" }}>
+          <p
+            className="text-[10px] font-medium uppercase tracking-[0.18em] mb-3"
+            style={{ color: "var(--muted)" }}
+          >
+            Similar styles — ships sooner or costs less
+          </p>
+          <div
+            className="grid gap-3"
+            style={{ gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))" }}
+          >
+            {result.alternatives.map((alt) => (
+              <AlternativeCard
+                key={alt.id}
+                alternative={alt}
+                onSelect={onProductSelect}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
