@@ -183,15 +183,17 @@ Before writing a single line of code, I used AI as a thinking partner to stress-
 
 **What AI did:**
 - Validated the intent-capture UX pattern against industry examples
-- Generated the initial scaffolding (backend + frontend), then split into layers on request
-- Helped write the 4 integration test cases
+- Generated the full code (backend + frontend) against a precise spec I had already written
 - Generated the 4 editorial South Asian bridal photography assets
+- Helped write the 4 integration test cases
 
 **What I did:**
-- Defined the entire problem scope and product decisions before AI wrote any code
-- Reviewed and restructured all generated code into the 3-layer backend
+- Defined all product and architectural decisions before any code was generated
+- Wrote the detailed spec that drove each code generation prompt
+- Reviewed all generated code, then directed AI to break it into the 3-tier backend structure
+- Verified each component worked correctly before moving to the next
 - Rejected AI's suggestion of a Go backend with goroutines and vector search as out-of-scope
-- Explicitly scoped out parallel search mocking — chose a real sequential algorithm instead, documented async execution as a genuine future improvement
-- Approved all git commits after manual review
+- Explicitly scoped out parallel search mocking — chose a real sequential algorithm instead
+- Approved all git commits after manual verification
 
 **Full prompt log and human override decisions:** see [`AI_AUDIT_TRAIL.md`](./AI_AUDIT_TRAIL.md)
