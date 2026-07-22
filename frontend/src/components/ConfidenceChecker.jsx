@@ -1,12 +1,13 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { checkConfidence } from "../api/confidence.js";
 import { cities, sizes } from "../data/product.js";
+import { formatCurrency } from "../lib/format.js";
 import { ConfidenceResult } from "./ConfidenceResult.jsx";
 import { SegmentedToggle } from "./SegmentedToggle.jsx";
 import { SizeSelector } from "./SizeSelector.jsx";
 
-export function ConfidenceChecker({ product }) {
+export function ConfidenceChecker({ product, onProductSelect }) {
   const [city, setCity] = useState("Lahore");
   const [isStitched, setIsStitched] = useState(true);
   const [selectedSize, setSelectedSize] = useState("");
@@ -14,99 +15,153 @@ export function ConfidenceChecker({ product }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const selectedSizeLabel = useMemo(() => {
-    return sizes.find((size) => size.value === selectedSize)?.label ?? "";
-  }, [selectedSize]);
+  // Auto-refetch whenever city, stitching preference, or size changes.
+  // When no size is selected yet, nothing happens.
+  useEffect(() => {
+    if (!selectedSize) return;
 
-  async function handleSizeSelect(size) {
-    setSelectedSize(size);
+    let cancelled = false;
+
     setLoading(true);
     setError("");
     setResult(null);
 
-    try {
-      const confidence = await checkConfidence({
-        productId: product.id,
-        size,
-        city,
-        isStitched,
+    checkConfidence({
+      productId: product.id,
+      size: selectedSize,
+      city,
+      isStitched,
+    })
+      .then((data) => {
+        if (!cancelled) setResult(data);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err.message);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
       });
-      setResult(confidence);
-    } catch (currentError) {
-      setError(currentError.message);
-    } finally {
-      setLoading(false);
-    }
-  }
+
+    // Cleanup: ignore stale responses if dependencies change mid-flight
+    return () => {
+      cancelled = true;
+    };
+  }, [city, isStitched, selectedSize, product.id]);
 
   return (
-    <div className="flex flex-col justify-center">
-      <div className="border-b border-slate-200 pb-6">
-        <p className="text-sm font-semibold uppercase tracking-wide text-rose-700">
+    <div className="flex flex-col">
+      {/* ── Product identity ── */}
+      <div style={{ borderBottom: "1px solid var(--border)", paddingBottom: "1.25rem", marginBottom: "1.5rem" }}>
+        <p
+          className="text-[11px] font-medium uppercase tracking-[0.2em]"
+          style={{ color: "var(--rose)" }}
+        >
           Bridal Collection
         </p>
-        <h1 className="mt-3 text-4xl font-semibold leading-tight text-slate-950 md:text-5xl">
+
+        <h1
+          className="font-display mt-2 leading-[1.1]"
+          style={{ fontSize: "clamp(2rem, 4vw, 2.75rem)", fontWeight: 500, color: "var(--ink)" }}
+        >
           {product.name}
         </h1>
-        <p className="mt-4 text-lg leading-8 text-slate-600">{product.description}</p>
+
+        {/* Listed price — always visible, set before customisation */}
+        <p
+          className="mt-3 font-semibold"
+          style={{ fontSize: "1.5rem", color: "var(--ink)", letterSpacing: "-0.01em" }}
+        >
+          {formatCurrency(product.price)}
+        </p>
+
+        <p
+          className="mt-3 text-sm leading-relaxed"
+          style={{ color: "var(--muted)" }}
+        >
+          {product.description}
+        </p>
       </div>
 
-      <section className="pt-6" aria-labelledby="confidence-checker-title">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2
-              id="confidence-checker-title"
-              className="text-xl font-semibold text-slate-950"
-            >
-              Confidence Checker
-            </h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Get stock, final price, delivery, and alternatives in one check.
-            </p>
-          </div>
-          <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
-            Live estimate
-          </span>
-        </div>
-
-        <div className="mt-5 grid gap-5">
-          <label className="grid gap-2 text-sm font-medium text-slate-700">
-            City
+      {/* ── Product configuration ── */}
+      {/* No section heading — controls read as natural product options */}
+      <div className="flex flex-col gap-5">
+        {/* Deliver to */}
+        <div>
+          <label
+            htmlFor="city-select"
+            className="block text-[11px] font-medium uppercase tracking-[0.16em] mb-2"
+            style={{ color: "var(--muted)" }}
+          >
+            Deliver to
+          </label>
+          <div className="relative">
             <select
+              id="city-select"
               value={city}
-              onChange={(event) => setCity(event.target.value)}
-              className="h-11 rounded-md border border-slate-300 bg-white px-3 text-slate-950 outline-none transition focus:border-rose-700 focus:ring-2 focus:ring-rose-100"
+              onChange={(e) => setCity(e.target.value)}
+              className="w-full h-11 pl-3 pr-9 text-sm appearance-none cursor-pointer"
+              style={{
+                border: "1px solid var(--border)",
+                background: "var(--surface)",
+                color: "var(--ink)",
+                outline: "none",
+                borderRadius: 0,
+                transition: "border-color 0.15s",
+              }}
+              onFocus={(e) => (e.target.style.borderColor = "var(--ink)")}
+              onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
             >
-              {cities.map((currentCity) => (
-                <option key={currentCity}>{currentCity}</option>
+              {cities.map((c) => (
+                <option key={c} value={c}>{c}</option>
               ))}
             </select>
-          </label>
-
-          <SegmentedToggle
-            label="Finish"
-            options={[
-              { label: "Stitched", value: true },
-              { label: "Unstitched", value: false },
-            ]}
-            value={isStitched}
-            onChange={setIsStitched}
-          />
-
-          <SizeSelector
-            sizes={sizes}
-            selectedSize={selectedSize}
-            onSelect={handleSizeSelect}
-          />
+            {/* Custom chevron */}
+            <span
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+              aria-hidden="true"
+            >
+              <svg
+                width="12"
+                height="12"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                viewBox="0 0 24 24"
+                style={{ color: "var(--muted)" }}
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </span>
+          </div>
         </div>
 
-        <ConfidenceResult
-          error={error}
-          loading={loading}
-          result={result}
-          selectedSizeLabel={selectedSizeLabel}
+        {/* Stitching preference */}
+        <SegmentedToggle
+          label="Finish"
+          options={[
+            { label: "Stitched", value: true },
+            { label: "Unstitched", value: false },
+          ]}
+          value={isStitched}
+          onChange={setIsStitched}
         />
-      </section>
+
+        {/* Size selection — clicking a size triggers the API */}
+        <SizeSelector
+          sizes={sizes}
+          selectedSize={selectedSize}
+          onSelect={setSelectedSize}
+        />
+      </div>
+
+      {/* ── Inline result: price breakdown / out-of-stock / loading ── */}
+      <ConfidenceResult
+        error={error}
+        loading={loading}
+        result={result}
+        selectedSize={selectedSize}
+        onProductSelect={onProductSelect}
+      />
     </div>
   );
 }
