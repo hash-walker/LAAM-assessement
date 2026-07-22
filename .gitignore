@@ -1,0 +1,6 @@
+backend/.venv/
+backend/__pycache__/
+frontend/dist/
+frontend/node_modules/
+.DS_Store
+AI_AUDIT_TRAIL.md
