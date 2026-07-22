@@ -38,7 +38,7 @@ class PurchaseConfidenceService:
         misses_sla = delivery_days > self.SLA_CUTOFF_DAYS
 
         if is_out_of_stock or misses_sla:
-            alternatives = self._find_alternatives(product["category"], norm_size, shipping["transit_days"])
+            alternatives = self._find_alternatives(product["category"], norm_size, shipping["transit_days"], product["id"])
             reason = "Out of stock" if is_out_of_stock else f"Delivery exceeds {self.SLA_CUTOFF_DAYS} days"
             
             return ConfidenceResponse(
@@ -58,8 +58,8 @@ class PurchaseConfidenceService:
             alternatives=[]
         )
 
-    def _find_alternatives(self, category: str, size: str, transit_days: int) -> List[AlternativeProduct]:
-        raw_alts = self.repo.get_fast_alternatives(category, size)
+    def _find_alternatives(self, category: str, size: str, transit_days: int, exclude_id: int = 0) -> List[AlternativeProduct]:
+        raw_alts = self.repo.get_fast_alternatives(category, size, exclude_id)
         formatted_alts = []
         
         for alt in raw_alts:
@@ -68,7 +68,7 @@ class PurchaseConfidenceService:
                 id=alt["id"],
                 name=alt["name"],
                 image_url=alt["image_url"],
-                price=alt["price"],
+                price=alt["base_price"],
                 delivery_days=processing_days + transit_days
             ))
             

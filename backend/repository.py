@@ -30,9 +30,11 @@ class CatalogRepository:
         normalized_city = city.strip().title()
         return SHIPPING.get(normalized_city, DEFAULT_SHIPPING)
 
-    def get_fast_alternatives(self, category: str, size: str) -> List[dict]:
+    def get_fast_alternatives(self, category: str, size: str, exclude_id: int = 0) -> List[dict]:
         alts = []
         for product in ALTERNATIVE_PRODUCTS:
+            if product["id"] == exclude_id:
+                continue
             variant = product["sizes"].get(size)
             if product["category"] == category and variant and variant["stock"] > 0:
                 alts.append(product)
