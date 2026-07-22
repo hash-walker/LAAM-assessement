@@ -1,34 +1,41 @@
-import { formatCurrency } from "../lib/format.js";
-
 export function ProductOverview({ product }) {
   return (
-    <aside className="space-y-5">
-      <div className="overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-slate-200">
+    <div className="md:sticky" style={{ top: "calc(3.5rem + 1.5rem)" }}>
+      {/* Main image */}
+      <div
+        className="overflow-hidden"
+        style={{ background: "#f0ebe3" }}
+      >
         <img
           src={product.imageUrl}
           alt={product.name}
-          className="aspect-[4/5] h-full w-full object-cover"
+          className="w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+          style={{ aspectRatio: "3 / 4", display: "block" }}
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-3 text-sm">
-        {product.highlights.map((highlight) => (
-          <div
-            key={highlight.label}
-            className="rounded-md border border-slate-200 bg-white p-3 shadow-sm"
-          >
-            <p className="font-semibold text-slate-950">{highlight.value}</p>
-            <p className="mt-1 text-xs text-slate-500">{highlight.label}</p>
-          </div>
-        ))}
+      {/* Thumbnail strip — structured for future multi-image support */}
+      <div className="mt-3 flex gap-2">
+        <button
+          aria-label={`View image of ${product.name}`}
+          className="overflow-hidden flex-shrink-0 transition-opacity hover:opacity-75"
+          style={{
+            width: 56,
+            height: 72,
+            border: "1.5px solid var(--ink)",
+            background: "#f0ebe3",
+            padding: 0,
+            cursor: "pointer",
+          }}
+        >
+          <img
+            src={product.imageUrl}
+            alt=""
+            aria-hidden="true"
+            className="w-full h-full object-cover"
+          />
+        </button>
       </div>
-
-      <div className="rounded-md border border-slate-200 bg-white p-4 shadow-sm">
-        <p className="text-sm text-slate-500">Starting price</p>
-        <p className="mt-1 text-2xl font-semibold text-slate-950">
-          {formatCurrency(product.price)}
-        </p>
-      </div>
-    </aside>
+    </div>
   );
 }
