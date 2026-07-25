@@ -10,7 +10,7 @@ This document details all AI-assisted activities, prompt engineering logs, model
 | --- | --- |
 | **Primary AI Models** | Google Gemini Pro 3.1 (Scoping/Research), Claude Sonnet 4.6 (Code Refactoring/Architecture), Gemini 3.6 Flash (Execution) |
 | **Execution Framework** | Antigravity AI Agentic Assistant |
-| **Sampling Parameters** | Deterministic code generation presets (`temperature: 0.0`, `seed: 0`) |
+| **Sampling Parameters** | Used the default settings of the AI tools; I did not configure sampling parameter |
 | **Tool Registry Invoked** | `write_to_file`, `replace_file_content`, `multi_replace_file_content`, `view_file`, `run_command`, `generate_image`, `manage_task`, `pytest`, `uvicorn` |
 | **Human Supervision** | 100% human-in-the-loop review for all code edits, architecture choices, and git commits |
 
