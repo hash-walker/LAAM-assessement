@@ -183,7 +183,7 @@ Before writing a single line of code, I used AI as a thinking partner to stress-
 
 **What AI did:**
 - Validated the intent-capture UX pattern against industry examples
-- Generated the full code (backend + frontend) against a precise spec I had already written
+- Assisted with implementing the backend and frontend from a detailed specification and architecture that I had defined. I manually reviewed, tested, and refined the generated code before committing it.
 - Generated the 4 editorial South Asian bridal photography assets
 - Helped write the 4 integration test cases
 
